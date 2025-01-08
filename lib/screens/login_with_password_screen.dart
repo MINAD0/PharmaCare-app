@@ -1,39 +1,27 @@
 import 'package:flutter/material.dart';
-import 'login_with_password_screen.dart';
+import 'package:pharmacare/screens/login_screen.dart';
+import 'package:pharmacare/screens/home_screen.dart'; // Replace with your home screen path
 import '../service/api_service.dart';
 
-class PasswordSetupScreen extends StatefulWidget {
-  final String codePatient; // Pass the codePatient to this screen
-
-  PasswordSetupScreen({required this.codePatient});
-
+class LoginWithPasswordScreen extends StatefulWidget {
   @override
-  _PasswordSetupScreenState createState() => _PasswordSetupScreenState();
+  _LoginWithPasswordScreenState createState() =>
+      _LoginWithPasswordScreenState();
 }
 
-class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
-  final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+class _LoginWithPasswordScreenState extends State<LoginWithPasswordScreen> {
+  final TextEditingController codeController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   bool isPasswordVisible = false;
-  bool isConfirmPasswordVisible = false;
   bool isLoading = false;
 
   final ApiService apiService = ApiService();
 
-  /// Handles Password Setup
-  void setupPassword() async {
-    if (newPasswordController.text.isEmpty ||
-        confirmPasswordController.text.isEmpty) {
+  /// Handles Login Logic
+  void handleLogin() async {
+    if (codeController.text.isEmpty || passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Fields cannot be empty!")),
-      );
-      return;
-    }
-
-    if (newPasswordController.text != confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Passwords do not match!")),
       );
       return;
     }
@@ -43,20 +31,24 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
     });
 
     try {
-      bool success = await apiService.setPassword(
-          widget.codePatient, newPasswordController.text);
+      String? token = await apiService.patientLogin(
+        codeController.text.trim(),
+        passwordController.text.trim(),
+      );
 
-      if (success) {
+      if (token != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Password set successfully!")),
+          SnackBar(content: Text("Login successful!")),
         );
+
+        // Navigate to HomeScreen after successful login
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LoginWithPasswordScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen(token: token)),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to set password. Please try again!")),
+          SnackBar(content: Text("Invalid code or password!")),
         );
       }
     } catch (error) {
@@ -84,12 +76,12 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
               child: Column(
                 children: [
                   Image.asset(
-                    'images/logo.png',
+                    'images/logo.png', // Ensure the image exists in your assets
                     height: 200,
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'Saisie votre pass 👋',
+                    'Bienvenue 👋',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -99,10 +91,27 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 20),
-            // New Password Input
+            SizedBox(height: 40),
+
+            // Code Input
             TextField(
-              controller: newPasswordController,
+              controller: codeController,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.code),
+                hintText: 'Code',
+                filled: true,
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+
+            // Password Input
+            TextField(
+              controller: passwordController,
               obscureText: !isPasswordVisible,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.lock),
@@ -116,35 +125,7 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
                     });
                   },
                 ),
-                hintText: 'New password',
-                filled: true,
-                fillColor: Colors.grey[200],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            // Confirm Password Input
-            TextField(
-              controller: confirmPasswordController,
-              obscureText: !isConfirmPasswordVisible,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    isConfirmPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      isConfirmPasswordVisible = !isConfirmPasswordVisible;
-                    });
-                  },
-                ),
-                hintText: 'Confirm password',
+                hintText: 'Password',
                 filled: true,
                 fillColor: Colors.grey[200],
                 border: OutlineInputBorder(
@@ -154,7 +135,8 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
               ),
             ),
             SizedBox(height: 24),
-            // Sign Up Button
+
+            // Login Button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -163,15 +145,34 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: isLoading ? null : setupPassword,
+              onPressed: isLoading ? null : handleLogin,
               child: isLoading
-                  ? CircularProgressIndicator(
-                      color: Colors.white,
-                    )
+                  ? CircularProgressIndicator(color: Colors.white)
                   : Text(
-                      'Sign Up',
+                      'Connexion',
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
+            ),
+            SizedBox(height: 16),
+
+            // Footer Link
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Don't have an account? "),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
+                  },
+                  child: Text(
+                    'Inscrit',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

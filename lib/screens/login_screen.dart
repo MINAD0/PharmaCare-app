@@ -1,8 +1,57 @@
 import 'package:flutter/material.dart';
-import 'password_setup_screen.dart';
+import 'package:pharmacare/screens/login_with_password_screen.dart';
+import 'package:pharmacare/screens/password_setup_screen.dart';
+import '../service/api_service.dart'; // Import the API service
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController codeController = TextEditingController();
+  final ApiService apiService = ApiService();
+  bool isLoading = false;
+
+  void handleLogin() async {
+    final String code = codeController.text.trim();
+
+    if (code.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Code cannot be empty!")),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      bool isValid = await apiService.verifyCode(code);
+
+      if (isValid) {
+        // Navigate to Password Setup Screen if the code is valid
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PasswordSetupScreen(codePatient: codeController.text.trim(),)),
+        );
+      } else {
+        // Show error message if the code is invalid
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Invalid code. Please try again.")),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $error")),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,31 +103,33 @@ class LoginScreen extends StatelessWidget {
                 ),
                 backgroundColor: Colors.blue,
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PasswordSetupScreen()),
-                );
-              },
-              child: Text(
-                'Inscrit',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
+              onPressed: isLoading ? null : handleLogin,
+              child: isLoading
+                  ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                  : Text(
+                      'Inscrit',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
             ),
             SizedBox(height: 24),
             // Footer
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Don't have an account? "),
+                Text("Do you have an account? "),
                 TextButton(
                   onPressed: () {
-                    // Add sign-up navigation logic
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginWithPasswordScreen()),
+                    );
                   },
                   child: Text(
                     'Connecter',
                     style: TextStyle(color: Colors.blue),
-                    
                   ),
                 ),
               ],
