@@ -7,7 +7,7 @@ class ApiService {
   final FlutterSecureStorage storage = FlutterSecureStorage();
 
   //Verify Code
-  Future<bool> verifyCode(String code) async {
+  Future<String> verifyCode(String code) async {
     final url = Uri.parse("$baseUrl/verify-code/$code");
 
     try {
@@ -24,11 +24,15 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        final responseBody = jsonDecode(response.body);
-        return true;
+        final data = jsonDecode(response.body);
+        if (data['passwordSet'] == 'true') {
+          return "Account already registered";
+        } else {
+          return "Account exists but not yet registered";
+        }
       } else {
         print("Error: ${response.statusCode} - ${response.body}");
-        return false;
+        throw Exception("Failed to verify code: ${response.body}");
       }
     } catch (error) {
       print("Error occurred during API call: $error");
@@ -84,8 +88,10 @@ class ApiService {
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(response.body);
         String token = responseBody['token'];
+        // String codePatient = responseBody['emailOrCode'];
         // Store the token securely
         await storage.write(key: 'token', value: token);
+        // await storage.write(key: 'codePatient', value: codePatient);
         print("Token saved: $token");
         return token;
       } else {

@@ -42,9 +42,10 @@ class _LoginWithPasswordScreenState extends State<LoginWithPasswordScreen> {
         );
 
         // Navigate to HomeScreen after successful login
-        Navigator.pushReplacement(
+        Navigator.pushReplacementNamed(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen(token: token)),
+          '/home',
+          arguments: codeController.text.trim(), // Pass codePatient as an argument
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

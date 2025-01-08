@@ -28,19 +28,17 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      bool isValid = await apiService.verifyCode(code);
+      String message = await apiService.verifyCode(code);
 
-      if (isValid) {
-        // Navigate to Password Setup Screen if the code is valid
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PasswordSetupScreen(codePatient: codeController.text.trim(),)),
-        );
-      } else {
-        // Show error message if the code is invalid
+      if (message == "Account already registered") {
+        // Navigate to login screen
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Invalid code. Please try again.")),
+          SnackBar(content: Text("Account already registered")),
         );
+        Navigator.pushReplacementNamed(context, '/login');
+      } else {
+        // Navigate to password setup screen
+        Navigator.pushReplacementNamed(context, '/set-password');
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(

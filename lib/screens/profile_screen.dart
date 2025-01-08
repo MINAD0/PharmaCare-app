@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../service/patient_service.dart'; // Import the API service
 
 class ProfileScreen extends StatefulWidget {
-  final String token;
+  final String codePatient;
 
-  const ProfileScreen({super.key, required this.token});
+  const ProfileScreen({super.key, required this.codePatient});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -22,21 +22,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void fetchProfile() async {
     final patientService = PatientService();
-    final profile = await patientService.getPatientByCode(widget.token);
-    setState(() {
-      patientProfile = profile;
-      isLoading = false;
-    });
+    try {
+      final profile = await patientService.getPatientByCode(widget.codePatient);
+      setState(() {
+        patientProfile = profile;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load profile: $e')),
+      );
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Patient Profile'),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-      ),
+      
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : patientProfile != null

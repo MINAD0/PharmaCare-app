@@ -26,8 +26,20 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/password_setup': (context) => PasswordSetupScreen(codePatient: 'defaultCode',),
         '/login_with_password': (context) => LoginWithPasswordScreen(),
-        '/home': (context) => HomeScreen(token: 'sampleToken'), // Provide a token here
-        '/profile': (context) => ProfileScreen(token: 'sampleToken'),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/home') {
+          final codePatient = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => HomeScreen(codePatient: codePatient),
+          );
+        } else if (settings.name == '/profile') {
+          final codePatient = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => ProfileScreen(codePatient: codePatient),
+          );
+        }
+        return null;
       },
     );
   }

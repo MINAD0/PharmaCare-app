@@ -4,9 +4,9 @@ import 'dart:async'; // Import Timer
 
 
 class HomeScreen extends StatefulWidget {
-  final String token;
+  final String codePatient;
 
-  const HomeScreen({super.key, required this.token});
+  const HomeScreen({super.key, required this.codePatient});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -17,27 +17,28 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> reminders = [];
   int _currentIndex = 0; // Tracks the selected tab
 
-  final List<Widget> _screens = []; // Store all screens
+final List<Widget> _screens = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _screens.addAll([
-      _buildHomeContent(),
-      _buildOrdonnanceContent(),
-      ProfileScreen(token: widget.token), // Pass token to ProfileScreen
-    ]);
+@override
+void initState() {
+  super.initState();
+  _screens.addAll([
+    _buildHomeContent(),
+    _buildOrdonnanceContent(),
+    ProfileScreen(codePatient: widget.codePatient), // Use directly without Scaffold
+  ]);
 
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        reminders = [
-          {'title': 'Take your morning medication', 'status': 'pending'},
-          {'title': 'Drink water every hour', 'status': 'pending'},
-          {'title': 'Visit the doctor next week', 'status': 'pending'},
-        ];
-      });
+  Future.delayed(Duration(seconds: 2), () {
+    setState(() {
+      reminders = [
+        {'title': 'Take your morning medication', 'status': 'pending'},
+        {'title': 'Drink water every hour', 'status': 'pending'},
+        {'title': 'Visit the doctor next week', 'status': 'pending'},
+      ];
     });
-  }
+  });
+}
+
 
   /// ✅ Toggle Reminder Status
   void toggleReminderStatus(int index, String status) {
@@ -52,6 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       });
     }
+  }
+
+  void _handleLogout() {
+    // Navigate back to the Login Screen
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
   Widget _buildHomeContent() {
@@ -207,6 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),
             label: 'Reminders',
+            
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.note),
@@ -225,7 +232,30 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
+      appBar: (_currentIndex == 2)
+    ? AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 1,
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: () {
+              _handleLogout();
+            },
+          ),
+        ],
+      )
+    : AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 1,
@@ -239,8 +269,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
       ),
+
       body: _screens[_currentIndex],
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
+
 }
