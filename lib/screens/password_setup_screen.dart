@@ -5,7 +5,7 @@ import '../service/api_service.dart';
 class PasswordSetupScreen extends StatefulWidget {
   final String codePatient; // Pass the codePatient to this screen
 
-  PasswordSetupScreen({required this.codePatient});
+  const PasswordSetupScreen({super.key, required this.codePatient});
 
   @override
   _PasswordSetupScreenState createState() => _PasswordSetupScreenState();
@@ -26,14 +26,14 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
     if (newPasswordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Fields cannot be empty!")),
+        const SnackBar(content: Text("Fields cannot be empty!")),
       );
       return;
     }
 
     if (newPasswordController.text != confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Passwords do not match!")),
+        const SnackBar(content: Text("Passwords do not match!")),
       );
       return;
     }
@@ -48,7 +48,7 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
 
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Password set successfully!")),
+          const SnackBar(content: Text("Password set successfully!")),
         );
         Navigator.pushReplacement(
           context,
@@ -56,7 +56,7 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to set password. Please try again!")),
+          const SnackBar(content: Text("Failed to set password. Please try again!")),
         );
       }
     } catch (error) {
@@ -87,8 +87,8 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
                     'images/logo.png',
                     height: 200,
                   ),
-                  SizedBox(height: 16),
-                  Text(
+                  const SizedBox(height: 16),
+                  const Text(
                     'Saisie votre pass 👋',
                     style: TextStyle(
                       fontSize: 24,
@@ -99,13 +99,13 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // New Password Input
             TextField(
               controller: newPasswordController,
               obscureText: !isPasswordVisible,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock),
+                prefixIcon: const Icon(Icons.lock),
                 suffixIcon: IconButton(
                   icon: Icon(
                     isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -125,13 +125,13 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Confirm Password Input
             TextField(
               controller: confirmPasswordController,
               obscureText: !isConfirmPasswordVisible,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock),
+                prefixIcon: const Icon(Icons.lock),
                 suffixIcon: IconButton(
                   icon: Icon(
                     isConfirmPasswordVisible
@@ -153,22 +153,22 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             // Sign Up Button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
               onPressed: isLoading ? null : setupPassword,
               child: isLoading
-                  ? CircularProgressIndicator(
+                  ? const CircularProgressIndicator(
                       color: Colors.white,
                     )
-                  : Text(
+                  : const Text(
                       'Sign Up',
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),

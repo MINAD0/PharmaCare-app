@@ -4,6 +4,8 @@ import 'package:pharmacare/screens/password_setup_screen.dart';
 import '../service/api_service.dart'; // Import the API service
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -18,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (code.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Code cannot be empty!")),
+        const SnackBar(content: Text("Code cannot be empty!")),
       );
       return;
     }
@@ -33,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (message == "Account already registered") {
         // Navigate to login screen
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Account already registered")),
+          const SnackBar(content: Text("Account already registered")),
         );
         Navigator.pushReplacementNamed(context, '/login');
       } else {
@@ -68,8 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     'images/logo.png', // Replace with your app logo
                     height: 200,
                   ),
-                  SizedBox(height: 16),
-                  Text(
+                  const SizedBox(height: 16),
+                  const Text(
                     'Bienvenue 👋',
                     style: TextStyle(
                       fontSize: 24,
@@ -80,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             // Code Input Field
             TextField(
               controller: codeController,
@@ -91,11 +93,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             // Button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -103,20 +105,20 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               onPressed: isLoading ? null : handleLogin,
               child: isLoading
-                  ? CircularProgressIndicator(
+                  ? const CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     )
-                  : Text(
+                  : const Text(
                       'Inscrit',
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             // Footer
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Do you have an account? "),
+                const Text("Do you have an account? "),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -125,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           builder: (context) => LoginWithPasswordScreen()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     'Connecter',
                     style: TextStyle(color: Colors.blue),
                   ),

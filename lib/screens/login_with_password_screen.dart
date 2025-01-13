@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pharmacare/screens/login_screen.dart';
-import 'package:pharmacare/screens/home_screen.dart'; // Replace with your home screen path
 import '../service/api_service.dart';
+import 'package:pharmacare/screens/login_screen.dart';
 
 class LoginWithPasswordScreen extends StatefulWidget {
+  const LoginWithPasswordScreen({super.key});
+
   @override
-  _LoginWithPasswordScreenState createState() =>
-      _LoginWithPasswordScreenState();
+  _LoginWithPasswordScreenState createState() => _LoginWithPasswordScreenState();
 }
 
 class _LoginWithPasswordScreenState extends State<LoginWithPasswordScreen> {
@@ -21,7 +21,7 @@ class _LoginWithPasswordScreenState extends State<LoginWithPasswordScreen> {
   void handleLogin() async {
     if (codeController.text.isEmpty || passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Fields cannot be empty!")),
+        const SnackBar(content: Text("Fields cannot be empty!")),
       );
       return;
     }
@@ -31,25 +31,31 @@ class _LoginWithPasswordScreenState extends State<LoginWithPasswordScreen> {
     });
 
     try {
-      String? token = await apiService.patientLogin(
+      final isLoggedIn = await apiService.patientLogin(
         codeController.text.trim(),
         passwordController.text.trim(),
       );
 
-      if (token != null) {
+      if (isLoggedIn) {
+        // Fetch the token from secure storage
+        final token = await apiService.getToken();
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Login successful!")),
+          const SnackBar(content: Text("Login successful!")),
         );
 
-        // Navigate to HomeScreen after successful login
+        // Navigate to HomeScreen with both codePatient and token
         Navigator.pushReplacementNamed(
           context,
           '/home',
-          arguments: codeController.text.trim(), // Pass codePatient as an argument
+          arguments: {
+            'codePatient': codeController.text.trim(),
+            'token': token,
+          },
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Invalid code or password!")),
+          const SnackBar(content: Text("Invalid code or password!")),
         );
       }
     } catch (error) {
@@ -71,6 +77,7 @@ class _LoginWithPasswordScreenState extends State<LoginWithPasswordScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Logo Section
             Center(
@@ -78,47 +85,58 @@ class _LoginWithPasswordScreenState extends State<LoginWithPasswordScreen> {
                 children: [
                   Image.asset(
                     'images/logo.png', // Ensure the image exists in your assets
-                    height: 200,
+                    height: 180,
                   ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Bienvenue 👋',
+                  const SizedBox(height: 16),
+                  const Text(
+                    'PharmaCare',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Bienvenue 👋',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
 
             // Code Input
             TextField(
               controller: codeController,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.code),
+                prefixIcon: const Icon(Icons.email_outlined, color: Colors.blue),
                 hintText: 'Code',
+                hintStyle: const TextStyle(color: Colors.grey),
                 filled: true,
-                fillColor: Colors.grey[200],
+                fillColor: Colors.grey[100],
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Password Input
             TextField(
               controller: passwordController,
               obscureText: !isPasswordVisible,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock),
+                prefixIcon: const Icon(Icons.lock_outline, color: Colors.blue),
                 suffixIcon: IconButton(
                   icon: Icon(
                     isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    color: Colors.grey,
                   ),
                   onPressed: () {
                     setState(() {
@@ -127,48 +145,49 @@ class _LoginWithPasswordScreenState extends State<LoginWithPasswordScreen> {
                   },
                 ),
                 hintText: 'Password',
+                hintStyle: const TextStyle(color: Colors.grey),
                 filled: true,
-                fillColor: Colors.grey[200],
+                fillColor: Colors.grey[100],
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             // Login Button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
               onPressed: isLoading ? null : handleLogin,
               child: isLoading
-                  ? CircularProgressIndicator(color: Colors.white)
-                  : Text(
-                      'Connexion',
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text(
+                      'Sign In',
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Footer Link
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Don't have an account? "),
+                const Text("Don't have an account? "),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     'Inscrit',
                     style: TextStyle(color: Colors.blue),
                   ),

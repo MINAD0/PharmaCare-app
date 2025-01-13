@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -12,7 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     // Add a 30-second delay before navigating to the LoginScreen
-    Timer(Duration(seconds: 5), () {
+    Timer(const Duration(seconds: 5), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -32,8 +34,8 @@ class _SplashScreenState extends State<SplashScreen> {
               'images/logo.png', // Replace with your logo asset
               height: 200,
             ),
-            SizedBox(height: 16),
-            CircularProgressIndicator(), // Optional: A loading indicator
+            const SizedBox(height: 16),
+            const CircularProgressIndicator(), // Optional: A loading indicator
           ],
         ),
       ),

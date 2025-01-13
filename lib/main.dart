@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pharmacare/screens/profile_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/password_setup_screen.dart';
@@ -8,10 +7,12 @@ import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,25 +22,37 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       initialRoute: '/',
-      routes: {
-        '/': (context) => SplashScreen(),
-        '/login': (context) => LoginScreen(),
-        '/password_setup': (context) => PasswordSetupScreen(codePatient: 'defaultCode',),
-        '/login_with_password': (context) => LoginWithPasswordScreen(),
-      },
       onGenerateRoute: (settings) {
-        if (settings.name == '/home') {
-          final codePatient = settings.arguments as String;
-          return MaterialPageRoute(
-            builder: (context) => HomeScreen(codePatient: codePatient),
-          );
-        } else if (settings.name == '/profile') {
-          final codePatient = settings.arguments as String;
-          return MaterialPageRoute(
-            builder: (context) => ProfileScreen(codePatient: codePatient),
-          );
+        switch (settings.name) {
+          case '/':
+            return MaterialPageRoute(builder: (context) => SplashScreen());
+          case '/login':
+            return MaterialPageRoute(builder: (context) => LoginScreen());
+          case '/password_setup':
+            final args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (context) => PasswordSetupScreen(
+                codePatient: args['codePatient'],
+              ),
+            );
+          case '/home':
+            final args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (context) => HomeScreen(
+                codePatient: args['codePatient'],
+                token: args['token'],
+              ),
+            );
+          case '/profile':
+            final args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (context) => ProfileScreen(
+                codePatient: args['codePatient'],
+              ),
+            );
+          default:
+            return null;
         }
-        return null;
       },
     );
   }

@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   http: ^1.2.2
   flutter_secure_storage: ^8.0.0
+  image_picker: ^0.8.7+5
+  path_provider: ^2.0.11
 
 dev_dependencies:
   flutter_test:
@@ -26,3 +28,4 @@ flutter:
     - images/logo.png # Store your logo in an `assets/` folder.
     - images/pills.png
     - images/chat_bubble.png
+    - images/ordonnance.png
